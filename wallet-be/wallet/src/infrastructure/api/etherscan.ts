@@ -1,19 +1,8 @@
+import { EthAPI } from 'src/domain/ethRepository.interface';
 import { isEthereumAddress } from '../../utils/validator';
-interface IEtherscanApi {
-  getBalance(address: string): Promise<number>;
+import { Transaction } from 'src/domain/models/transaction';
 
-  getTransactions(address: string): Promise<Transaction[]>;
-}
-
-interface Transaction {
-  hash: string;
-  blockNumber: number;
-  from: string;
-  to: string;
-  value: number;
-}
-
-export class Etherscan implements IEtherscanApi {
+export class Etherscan implements EthAPI {
   private readonly apiKey: string;
 
   constructor(apiKey: string) {
@@ -70,6 +59,7 @@ export class Etherscan implements IEtherscanApi {
         from: tx.from,
         to: tx.to,
         value: parseInt(tx.value) / 10 ** 18,
+        timeStamp: parseInt(tx.timeStamp),
       }));
       return transactions;
     } catch (err) {
