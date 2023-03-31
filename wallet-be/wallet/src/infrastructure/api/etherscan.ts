@@ -38,11 +38,12 @@ export class Etherscan implements EthAPI {
     }
   }
 
-  public async getTransactions(address: string): Promise<Transaction[]> {
+  public async getTransactions(address: string): Promise<Transaction> {
     if (!isEthereumAddress(address)) {
       throw new Error('Invalid address');
     }
-    const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&apikey=${this.apiKey}`;
+    const oneYearAgo = Math.floor(Date.now() / 1000) - 31536000;
+    const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=${this.apiKey}&timestamp=${oneYearAgo}`;
     try {
       const response = await fetch(url);
       if (response.status && response.status !== 200) {
@@ -61,7 +62,7 @@ export class Etherscan implements EthAPI {
         value: parseInt(tx.value) / 10 ** 18,
         timeStamp: parseInt(tx.timeStamp),
       }));
-      return transactions;
+      return transactions?.length > 0 ? transactions[0] : null;
     } catch (err) {
       const errorMessage =
         err.message || `Failed to get transactions for address ${address}`;
