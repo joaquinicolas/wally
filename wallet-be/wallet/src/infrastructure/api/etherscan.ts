@@ -1,7 +1,9 @@
 import { EthAPI } from 'src/domain/ethRepository.interface';
 import { isEthereumAddress } from '../../utils/validator';
 import { Transaction } from 'src/domain/models/transaction';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class Etherscan implements EthAPI {
   private readonly apiKey: string;
 
