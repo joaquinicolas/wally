@@ -7,8 +7,12 @@ describe('Etherscan', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        Etherscan,
-        { provide: 'ETH_API_KEY', useValue: 'your-api-key-here' },
+        { provide: 'API_KEY', useValue: 'your-api-key-here' },
+        {
+          provide: Etherscan,
+          useFactory: (apiKey: string) => new Etherscan(apiKey),
+          inject: ['API_KEY'],
+        },
       ],
     }).compile();
 

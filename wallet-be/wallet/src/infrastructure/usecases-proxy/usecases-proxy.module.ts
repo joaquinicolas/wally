@@ -4,9 +4,11 @@ import { UseCaseProxy } from './usecases-proxy';
 import { Etherscan } from '../api/etherscan';
 import { GetWalletUseCase } from 'src/usecases/getWallet.usecases';
 import { GetExchangeRatesUseCase } from 'src/usecases/getExchange.usecases';
+import { APIModule } from '../api/api.module';
 
 @Module({
-  imports: [],
+  imports: [APIModule],
+  providers: [],
 })
 export class UseCasesProxyModule {
   static GET_WALLET_USECASES_PROXY = 'getWalletUsecasesProxy';
@@ -28,6 +30,10 @@ export class UseCasesProxyModule {
             return new UseCaseProxy(new GetExchangeRatesUseCase());
           },
         },
+      ],
+      exports: [
+        UseCasesProxyModule.GET_WALLET_USECASES_PROXY,
+        UseCasesProxyModule.GET_EXCHANGE_RATE_USECASES_PROXY,
       ],
     };
   }

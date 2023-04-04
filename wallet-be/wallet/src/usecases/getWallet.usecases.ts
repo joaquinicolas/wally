@@ -2,7 +2,7 @@ import { EthAPI } from 'src/domain/ethRepository.interface';
 import { Wallet } from 'src/domain/models/wallet';
 
 export class GetWalletUseCase {
-  constructor(private readonly ethRepository: EthAPI) {}
+  constructor(public readonly ethRepository: EthAPI) {}
 
   async execute(address: string): Promise<Wallet> {
     const balance = await this.ethRepository.getBalance(address);
