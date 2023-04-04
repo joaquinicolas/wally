@@ -26,7 +26,7 @@ export class WalletController {
     private readonly getExchangeRateUsecasesProxy: UseCaseProxy<GetExchangeRatesUseCase>,
   ) {}
 
-  @Get(':address')
+  @Get('/wallet/:address')
   async getBalance(@Param('address') address: string): Promise<Wallet> {
     try {
       const wallet = await this.getWalletUsecasesProxy
