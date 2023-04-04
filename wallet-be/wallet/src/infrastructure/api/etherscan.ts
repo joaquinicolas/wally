@@ -5,18 +5,14 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class Etherscan implements EthAPI {
-  private readonly apiKey: string;
-
-  constructor(apiKey: string) {
-    this.apiKey = apiKey;
-  }
+  constructor(public readonly apikey: string) {}
 
   public async getBalance(address: string): Promise<number> {
     if (!isEthereumAddress(address)) {
       throw new Error('Invalid address');
     }
 
-    const url = `https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest&apikey=${this.apiKey}`;
+    const url = `https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest&apikey=${this.apikey}`;
 
     try {
       const response = await fetch(url);
@@ -45,7 +41,7 @@ export class Etherscan implements EthAPI {
       throw new Error('Invalid address');
     }
     const oneYearAgo = Math.floor(Date.now() / 1000) - 31536000;
-    const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=${this.apiKey}&timestamp=${oneYearAgo}`;
+    const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=${this.apikey}&timestamp=${oneYearAgo}`;
     try {
       const response = await fetch(url);
       if (response.status && response.status !== 200) {
