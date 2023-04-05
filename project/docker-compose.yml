@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  wallet-ui:
+    build:
+      context: ./../wallet-ui
+      dockerfile: ui.dockerfile
+    container_name: wallet-ui
+    ports:
+      - '3001:3000'
+    networks:
+      - wallet-network
+
+  wallet-be:
+    build:
+      context: ./../wallet-be/wallet
+      dockerfile: be.dockerfile
+    container_name: wallet-be
+    ports:
+      - '3000:3000'
+    networks:
+      - wallet-network
+
+networks:
+  wallet-network:
+    driver: bridge
