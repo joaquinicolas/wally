@@ -1,19 +1,17 @@
-FROM node:17-alpine
+FROM node:lts
 
-# Set the working directory in the container
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json to the container
-COPY package*.json ./
+RUN npm install -g pnpm
 
-# Install dependencies
-RUN npm install
+COPY pnpm-lock.yaml package.json ./
 
-# Copy the rest of the project files to the container
+RUN pnpm install --frozen-lockfile
+
 COPY . .
 
-# Expose port 3000 (where Next.js works by default)
+#RUN pnpm run build
+
 EXPOSE 3000
 
-# Run the command npm run dev to start the development server
-CMD ["npm", "run", "dev"]
+CMD ["pnpm", "dev"]

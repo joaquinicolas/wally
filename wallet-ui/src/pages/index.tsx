@@ -9,7 +9,7 @@ import PriceEditor from "@/components/priceEditor";
 import Header from "@/components/header";
 import WalletAddressManager from "@/components/walletManager";
 import Footer from "@/components/footer";
-import { fetchWalletData } from "@/services/wallet";
+import { fetchRates, fetchWalletData } from "@/services/wallet";
 
 interface Wallet {
   address: string;
@@ -17,9 +17,15 @@ interface Wallet {
   balance: number;
 }
 
+interface Rate {
+  currency: string;
+  rate: number;
+}
+
 const inter = Inter({ subsets: ["latin"] });
 export default function Home() {
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(0.0);
+  const [rates, setRates] = useState<Rate[]>([]);
   const [currency, setCurrency] = useState("USD");
   const [wallet, setWallet] = useState({
     address: "",
@@ -32,12 +38,24 @@ export default function Home() {
     if (address === "") {
       return;
     }
-    fetchWalletData(address).then((w) => {
-      if (w) {
-        setWallet({ address: w.address, balance: w.balance, isOld: w.isOld });
-      }
-    });
+    fetchWalletData(address)
+      .then((w) => {
+        if (w) {
+          setWallet({ address: w.address, balance: w.balance, isOld: w.isOld });
+        }
+      })
+      .then(() => fetchRates())
+      .then((rates) => {
+        if (rates && Array.isArray(rates) && rates.length > 0) {
+          setRates(rates);
+        }
+      });
   }, [address]);
+
+  useEffect(() => {
+    const rate = rates.find((r) => r.currency === currency);
+    setAmount((val) => val / (rate ? rate.rate : 1));
+  }, [rates, currency]);
 
   return (
     <>
@@ -59,13 +77,18 @@ export default function Home() {
           ) : null}
           <Grid container spacing={4} alignItems="stretch">
             <Grid item xs={6}>
-              <PriceEditor priceAmount={amount} setPriceAmount={setAmount} />
+              <PriceEditor
+                priceAmount={wallet.balance.toString()}
+                setPriceAmount={(newBalance) =>
+                  setWallet({ ...wallet, balance: +newBalance })
+                }
+              />
             </Grid>
             <Grid item xs={6}>
               <CurrencySelector
                 currency={currency}
                 setCurrency={setCurrency}
-                priceAmount={amount}
+                priceAmount={amount.toString()}
               />
             </Grid>
             <Grid item xs={12}>

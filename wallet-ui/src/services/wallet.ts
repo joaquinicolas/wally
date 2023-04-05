@@ -1,6 +1,8 @@
 export const fetchWalletData = async (address: string) => {
   try {
-    const response = await fetch(`http://wallet-be/wallet/wallet/${address}`);
+    const response = await fetch(
+      `http://localhost:3000/wallet/wallet/${address}`
+    );
     const data = await response.json();
 
     return data;
@@ -10,4 +12,14 @@ export const fetchWalletData = async (address: string) => {
   }
 };
 
-// Create new class called WalletService
+export const fetchRates = async () => {
+  try {
+    const response = await fetch(`http://localhost:3000/wallet/exchange`);
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching rates:", error);
+    throw error;
+  }
+};
