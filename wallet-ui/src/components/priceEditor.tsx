@@ -41,7 +41,7 @@ const PriceEditor: React.FC<PriceEditorProps> = ({
       <TextField
         fullWidth
         variant="outlined"
-        label="Price Amount"
+        label="ETH Balance"
         value={priceAmount}
         onChange={handleAmountChange}
         InputProps={{

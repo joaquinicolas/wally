@@ -9,30 +9,53 @@ import PriceEditor from "@/components/priceEditor";
 import Header from "@/components/header";
 import WalletAddressManager from "@/components/walletManager";
 import Footer from "@/components/footer";
+import { fetchRates, fetchWalletData } from "@/services/wallet";
+
+interface Wallet {
+  address: string;
+  isOld: boolean;
+  balance: number;
+}
+
+interface Rate {
+  currency: string;
+  rate: number;
+}
 
 const inter = Inter({ subsets: ["latin"] });
 export default function Home() {
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(0.0);
+  const [rates, setRates] = useState<Rate[]>([]);
   const [currency, setCurrency] = useState("USD");
-  const [walletAddress, setWalletAddress] = useState("");
+  const [wallet, setWallet] = useState({
+    address: "",
+    isOld: false,
+    balance: 0,
+  } as Wallet);
+  const [address, setAddress] = useState("");
 
   useEffect(() => {
-    if (walletAddress) {
-      fetchWalletData(walletAddress);
+    if (address === "") {
+      return;
     }
-  }, [walletAddress]);
+    fetchWalletData(address)
+      .then((w) => {
+        if (w) {
+          setWallet({ address: w.address, balance: w.balance, isOld: w.isOld });
+        }
+      })
+      .then(() => fetchRates())
+      .then((rates) => {
+        if (rates && Array.isArray(rates) && rates.length > 0) {
+          setRates(rates);
+        }
+      });
+  }, [address]);
 
-  const fetchWalletData = async (address: string) => {
-    try {
-      // Replace this with your actual API call
-      console.log(`Fetching data for wallet address: ${address}`);
-      // const response = await fetch(`https://your-api.com/wallet-data/${address}`);
-      // const data = await response.json();
-      // Process the data as needed
-    } catch (error) {
-      console.error("Error fetching wallet data:", error);
-    }
-  };
+  useEffect(() => {
+    const rate = rates.find((r) => r.currency === currency);
+    setAmount((val) => val / (rate ? rate.rate : 1));
+  }, [rates, currency]);
 
   return (
     <>
@@ -47,22 +70,29 @@ export default function Home() {
       >
         <Header />
         <div style={{ padding: "16px", flexGrow: 1 }}>
-          <Alert severity="warning" style={{ marginBottom: "16px" }}>
-            This wallet is old
-          </Alert>
+          {wallet.isOld ? (
+            <Alert severity="warning" style={{ marginBottom: "16px" }}>
+              This wallet is old
+            </Alert>
+          ) : null}
           <Grid container spacing={4} alignItems="stretch">
             <Grid item xs={6}>
-              <PriceEditor priceAmount={amount} setPriceAmount={setAmount} />
+              <PriceEditor
+                priceAmount={wallet.balance.toString()}
+                setPriceAmount={(newBalance) =>
+                  setWallet({ ...wallet, balance: +newBalance })
+                }
+              />
             </Grid>
             <Grid item xs={6}>
               <CurrencySelector
                 currency={currency}
                 setCurrency={setCurrency}
-                priceAmount={amount}
+                priceAmount={amount.toString()}
               />
             </Grid>
             <Grid item xs={12}>
-              <WalletAddressManager onFavoriteChanged={setWalletAddress} />
+              <WalletAddressManager onFavoriteChanged={setAddress} />
             </Grid>
           </Grid>
         </div>
