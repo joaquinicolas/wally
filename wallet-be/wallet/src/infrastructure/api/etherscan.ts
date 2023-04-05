@@ -1,5 +1,5 @@
 import { EthAPI } from 'src/domain/ethRepository.interface';
-import { isEthereumAddress } from '../../utils/validator';
+import { isValidEthAddress } from '../../utils/validator';
 import { Transaction } from 'src/domain/models/transaction';
 import { Injectable } from '@nestjs/common';
 
@@ -8,11 +8,11 @@ export class Etherscan implements EthAPI {
   constructor(public readonly apikey: string) {}
 
   public async getBalance(address: string): Promise<number> {
-    if (!isEthereumAddress(address)) {
+    if (!isValidEthAddress(address)) {
       throw new Error('Invalid address');
     }
 
-    const url = `https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest&apikey=${this.apikey}`;
+    const url = `https://api.etherscan.io/api?module=account&action=balance&address=${address}&tag=latest&apikey=NSZCD6S4TKVWRS13PMQFMVTNP6H7NAGHUY`;
 
     try {
       const response = await fetch(url);
@@ -37,11 +37,11 @@ export class Etherscan implements EthAPI {
   }
 
   public async getTransactions(address: string): Promise<Transaction> {
-    if (!isEthereumAddress(address)) {
+    if (!isValidEthAddress(address)) {
       throw new Error('Invalid address');
     }
     const oneYearAgo = Math.floor(Date.now() / 1000) - 31536000;
-    const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=${this.apikey}&timestamp=${oneYearAgo}`;
+    const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=desc&apikey=NSZCD6S4TKVWRS13PMQFMVTNP6H7NAGHUY&timestamp=${oneYearAgo}`;
     try {
       const response = await fetch(url);
       if (response.status && response.status !== 200) {

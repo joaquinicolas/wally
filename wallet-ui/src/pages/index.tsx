@@ -24,6 +24,7 @@ interface Rate {
 
 const inter = Inter({ subsets: ["latin"] });
 export default function Home() {
+  // amount represents eth in USD/EUR
   const [amount, setAmount] = useState(0.0);
   const [rates, setRates] = useState<Rate[]>([]);
   const [currency, setCurrency] = useState("USD");
@@ -54,8 +55,8 @@ export default function Home() {
 
   useEffect(() => {
     const rate = rates.find((r) => r.currency === currency);
-    setAmount((val) => val / (rate ? rate.rate : 1));
-  }, [rates, currency]);
+    setAmount(() => wallet.balance * (rate ? rate.rate : 1));
+  }, [rates, currency, wallet.balance]);
 
   return (
     <>

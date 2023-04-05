@@ -1,0 +1,24 @@
+# Ignore the .next and node_modules directories
+.next
+node_modules
+ # Ignore files used by development tools
+*~
+*.log
+.DS_Store
+.vscode/
+.idea/
+.npmrc
+ # Ignore build artifacts
+*.o
+*.obj
+*.exe
+*.ilk
+*.pdb
+*.class
+*.war
+*.ear
+*.jar
+ # Ignore source control artifacts
+.svn
+.git
+.gitignore
